@@ -19,9 +19,13 @@ with open(bank_data, newline = "") as csvfile:
     Max = 0
     Min = 0
     AvgProfitLoss = 0
+    Previous = 0
+    CummulativeDiff = 0
 
     #Loop through each row
     for row in csvreader:
+
+
         #TotalMonths tracks how many rows we have reviewed
         TotalMonths += 1
 
@@ -29,18 +33,26 @@ with open(bank_data, newline = "") as csvfile:
         NetProfitLoss = NetProfitLoss + int(row[1])
 
         #AverageProfit Loss is the net divided by rows we have process (i.e. months)
-        AvgProfitLoss = NetProfitLoss/TotalMonths
+        Current = int(row[1])
+        
+        Diff = Current - Previous
 
+        CummulativeDiff = CummulativeDiff + Diff
+
+        AvgProfitLoss = (CummulativeDiff)/TotalMonths
+
+        Previous = int(row[1])
+        
         #Identify row with max value
-        if int(row[1]) > Max:
-            Max = int(row[1])
+        if int(Diff) > Max:
+            Max = int(Diff)
             DateMax = row[0]
         else:
             Max = Max
         
         #Identify row with min value
-        if int(row[1]) < Min:
-            Min = int(row[1])
+        if int(Diff) < Min:
+            Min = int(Diff)
             DateMin = row[0]
         else:
             Min = Min
@@ -51,7 +63,7 @@ with open(FinancialResults, "w", newline="") as text_file:
     print(f"Financial Analysis", file=text_file)
     print(f"--------------------------" , file=text_file)
     print(f"Total Months: {str(TotalMonths)}" , file=text_file)
-    print(f"Total Net Profi/Loss: ${str(NetProfitLoss)}" , file=text_file)
+    print(f"Total Net Profit/Loss: ${str(NetProfitLoss)}" , file=text_file)
     print(f"Average Change: ${str(AvgProfitLoss)}", file=text_file)
     print(f"Greatest Increase in Profits: {str(DateMax)} (${str(Max)})", file=text_file)
     print(f"Greatest Decrease in Profits: {str(DateMin)} (${str(Min)})", file=text_file)
